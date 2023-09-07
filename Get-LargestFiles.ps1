@@ -21,19 +21,17 @@ $TotalUsage = Convert-Bytes ($AllFiles | Measure-Object -Property Length -Sum).S
 
 Write-Host "`nChecking all files in folder: " -NoNewLine
 Write-Host "$($PWD.ProviderPath)" -ForegroundColor 'green'
-Write-Host "Total data in this folder: " -NoNewLine
+Write-Host "Total data in this folder:    " -NoNewLine
 Write-Host "$TotalUsage" -ForegroundColor 'green'
-Write-Host "Total files in this folder: " -NoNewLine
+Write-Host "Total files in this folder:   " -NoNewLine
 Write-Host "$($AllFiles.Count)" -ForegroundColor 'green'
 
 # Output the top 30 largest files in this directory sorted by size. Show the size and the file path to them (minus the current path name).
 Write-Host "`nThe largest files in this folder are:" -NoNewLine
 $AllFiles | 
-Sort-Object -Descending -Property Length | 
-Select-Object -First 30 | 
-Select-Object Length, @{Name="Size";Expression={Convert-Bytes $_.Length}}, @{Name="File";Expression={$_.FullName -replace ($($PWD.ProviderPath) -replace '\\','\\' -replace '\$','\$') -replace '^\\(.*)','$1'}} | 
 Sort-Object -Descending -Property Length, @{Expression="File";Descending=$false} | 
-Format-Table @{Name="Size";Expression={$_.Size};Align="Right"},File -Wrap
+Select-Object -First 30 | 
+Format-Table @{Name="Size";Expression={Convert-Bytes $_.Length};Align="Right"}, @{Name="File";Expression={$_.FullName -replace ($($PWD.ProviderPath) -replace '\\','\\' -replace '\$','\$') -replace '^\\(.*)','$1'}} -Wrap
 
 Write-Host "Press any key to exit."
 [Console]::ReadKey() > $null
